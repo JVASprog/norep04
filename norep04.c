@@ -34,40 +34,55 @@
 #include <stdlib.h>
 #include <time.h>
 
-int **vect, nt, nb;
+#define BOLAS (5)
+
+int **casos, nt;
 int *funcrand(int n);
 void print_vect(int *vect, int len);
+double *estatistica(int n);
+
 int main(void)
 {
     srand(time(NULL));
-    int i;
-    printf("Digite a quantidade de bolas que deseja sortear:\n");
-    scanf("%d", &nb);
-    printf("Digite a quantidade de testes(repeticoes) que deseja realizar:\n");
+    int i, j;
+    printf("\nO Sorteio sera realizado com apenas 5 bolas.\nPor favor, digite a quantidade de testes:\n");
     scanf("%d", &nt);
-    vect = malloc(nt*sizeof(int*));
-    for (i=0; i<nb; i++){
-        vect[i] = funcrand(nb);
+    casos = malloc(nt *sizeof(int*)); //alocando e zerando o vetor casos.
+    
+    for (i=0; i<nt; i++){
+        casos[i] = funcrand(BOLAS);
+        print_vect(casos[i], BOLAS);
     }
-    void print_vect();
+
+    printf("Estatistica da ordem dos numeros:\n");
+    for (i=0; i<BOLAS; i++){
+        double *stats = estatistica(i+1);
+        printf("Bola %d =>\n", i+1);
+        for (j=0; j<BOLAS; j++){
+            printf("\t%da -> %.2f%%\n", j+1, stats[j]*100);
+        }
+        free(stats);
+    }
     return 0;
 }
 
 int *funcrand(int n)
 {    
-    int i, aux;
+    int i, aux, r;
     int *vect = malloc(n*sizeof(int));
     for (i=0; i<n; i++){
         vect[i] = i+1;
     }
     for (i=0; i<n; i++){
-        int r = rand()%n;
+        r = rand()%n;
+
         aux = vect[r];
         vect[r] = vect[i];
         vect[i] = aux;
     }
     return vect;
 }
+
 void print_vect(int *vect, int len)
 {
     int i;
@@ -79,3 +94,22 @@ void print_vect(int *vect, int len)
     }
     printf("\n");
 }
+
+double *estatistica(int b)
+{
+    int j, k;
+    double *stats = malloc(BOLAS *sizeof(double));
+    for (j=0; j<BOLAS; j++){
+        stats[j] = 0;
+        for (k=0; k<nt; k++){
+            if (casos[k][j] == b){
+                stats[j]++;
+            }
+        }
+    }
+    for (j=0; j<BOLAS; j++){
+        stats[j] /= (double)nt;
+    }
+    return stats;
+}
+
